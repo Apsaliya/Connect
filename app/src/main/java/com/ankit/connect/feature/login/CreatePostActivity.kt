@@ -10,12 +10,15 @@ import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.extensions.*
+import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.util.managers.PostManager
 import com.google.firebase.auth.FirebaseAuth
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.define.Define
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.post.*
 import timber.log.Timber
 import java.util.ArrayList
 
@@ -28,10 +31,24 @@ class CreatePostActivity: AppCompatActivity() {
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
-    if (checkStoragePermission()) {
-      showGallery()
+    setContentView(R.layout.post)
+    push.setOnClickListener {
+      if (checkStoragePermission()) {
+        showGallery()
+      }
     }
+    
+    pull.setOnClickListener {
+      FirebaseDbHelper.getInstance().getPostList(0)
+          .map { t -> t.posts }
+          .subscribeOn(Schedulers.io())
+          .subscribe({
+            pull_count.text = ""+it.size
+          }, {
+            it.printStackTrace()
+          })
+    }
+    
   }
   
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -55,7 +72,7 @@ class CreatePostActivity: AppCompatActivity() {
     when (requestCode) {
       Define.ALBUM_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
         uris = data?.getParcelableArrayListExtra<Uri>(Define.INTENT_PATH) as ArrayList<Uri>
-        
+        savePost("sdsdc", "Asdsd")
       }
     }
   }

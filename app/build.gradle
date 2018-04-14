@@ -47,6 +47,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:2.1.12"
     implementation 'com.jakewharton.timber:timber:4.7.0'
     implementation 'com.sangcomz:FishBun:0.8.6'
+    implementation 'com.github.ybq:Android-SpinKit:1.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
