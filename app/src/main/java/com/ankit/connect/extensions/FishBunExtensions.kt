@@ -36,7 +36,8 @@ inline fun FishBunCreator.setDefaults(): FishBunCreator {
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun FishBunCreator.setCounts(): FishBunCreator {
-  return setMaxCount(10)
+  return setMaxCount(1)
       .setPickerSpanCount(5)
+      .setReachLimitAutomaticClose(true)
       .setAlbumSpanCount(2, 3)
 }
