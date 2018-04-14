@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Connect</string>
+    <string name="google_large_image_url_pattern">%1$s?sz=%2$d</string>
+    <string name="plus">Add</string>
+    <string name="permission_deny_msg">Permission denied. Can not access gallery images.</string>
+    <string name="label_all">All</string>
+    <string name="label_select_image">Select Images</string>
+    <string name="label_no_select">Please select three or more!</string>
+</resources>
