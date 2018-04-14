@@ -113,9 +113,13 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
           // the auth state listener will be notified and logic to handle the
           // signed in user can be handled in the listener.
           Timber.d("signInWithCredential task completed.")
+          
           if (!task.isSuccessful) {
             Timber.d("signInWithCredential task unsuccessfull.")
             showSnackBar("Auth error")
+          } else {
+            val i = Intent(this@LoginActivity, CreatePostActivity::class.java)
+            startActivity(i)
           }
         }
   }

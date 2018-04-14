@@ -8,10 +8,15 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.ankit.connect.R
+import com.ankit.connect.data.model.Post
 import com.ankit.connect.extensions.*
+import com.ankit.connect.util.managers.PostManager
+import com.google.firebase.auth.FirebaseAuth
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.define.Define
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import java.util.ArrayList
 
 /**
@@ -53,6 +58,19 @@ class CreatePostActivity: AppCompatActivity() {
         
       }
     }
+  }
+  
+  private fun savePost(title: String, description: String) {
+    val post = Post(title)
+    post.description = description
+    post.authorId = FirebaseAuth.getInstance().currentUser!!.uid
+    PostManager.getInstance().createOrUpdatePostWithImage(uris[0], post)
+        .subscribeOn(Schedulers.io())
+        .subscribe({
+          Timber.d("Post created and uploaded successfully? $it")
+        }, {
+          it.printStackTrace()
+        })
   }
   
   private fun showGallery() {
