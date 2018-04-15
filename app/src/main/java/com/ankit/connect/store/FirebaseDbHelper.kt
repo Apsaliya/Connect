@@ -2,6 +2,8 @@ package com.ankit.connect.store
 
 import android.net.Uri
 import android.util.Log
+import com.ankit.connect.data.model.Comment
+import com.ankit.connect.data.model.Like
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.data.model.PostListResult
 import com.ankit.connect.extensions.toMap
@@ -14,8 +16,9 @@ import com.google.firebase.storage.UploadTask
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.FlowableOnSubscribe
+import io.reactivex.Single
 import timber.log.Timber
-import java.util.HashMap
+import java.util.*
 
 /**
  * Created by ankit on 13/04/18.
@@ -70,6 +73,184 @@ class FirebaseDbHelper {
       databaseReference?.updateChildren(childUpdates)
     } catch (e: Exception) {
       e.printStackTrace()
+    }
+  }
+  
+  fun hasCurrentUserLikeSingleValue(postId: String, userId: String) : Single<Boolean> {
+    return Single.create<Boolean> {
+      val databaseReference = database?.getReference("post-likes")?.child(postId)?.child(userId)
+      databaseReference?.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+          it.onSuccess(dataSnapshot.exists())
+        }
+    
+        override fun onCancelled(databaseError: DatabaseError) {
+          it.onError(databaseError.toException())
+        }
+      })
+    }
+  }
+  
+  fun removeLike(postId: String, postAuthorId: String): Single<Boolean> {
+    return Single.create<Boolean> {
+      val authorId = firebaseAuth.currentUser!!.uid
+      val mLikesReference = database?.reference?.child("post-likes")?.child(postId)?.child(authorId)
+      mLikesReference?.removeValue(object : DatabaseReference.CompletionListener {
+        override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
+          if (databaseError == null) {
+            val postRef = database?.getReference("posts/$postId/likesCount")
+            decrementLikesCount(postRef!!)
+        
+            val profileRef = database?.getReference("profiles/$postAuthorId/likesCount")
+            decrementLikesCount(profileRef!!)
+          } else {
+            it.onError(databaseError.toException())
+          }
+        }
+    
+        private fun decrementLikesCount(postRef: DatabaseReference) {
+          postRef.runTransaction(object : Transaction.Handler {
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+              val currentValue = mutableData.getValue(Long::class.java)
+              if (currentValue == null) {
+                mutableData.setValue(0)
+              } else {
+                mutableData.setValue(currentValue - 1)
+              }
+          
+              return Transaction.success(mutableData)
+            }
+        
+            override fun onComplete(databaseError: DatabaseError, b: Boolean, dataSnapshot: DataSnapshot) {
+             it.onSuccess(b)
+            }
+          })
+        }
+      })
+    }
+  }
+  
+  fun createOrUpdateLike(postId: String, postAuthorId: String): Single<Boolean> {
+    return Single.create<Boolean> {
+      try {
+        val authorId = firebaseAuth.currentUser!!.uid
+        val mLikesReference = database?.getReference()?.child("post-likes")?.child(postId)?.child(authorId)
+        mLikesReference?.push()
+        val id = mLikesReference?.push()?.key
+        val like = Like(authorId)
+        like.setId(id!!)
+    
+        mLikesReference.child(id).setValue(like, object : DatabaseReference.CompletionListener {
+          override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
+            if (databaseError == null) {
+              val postRef = database?.getReference("posts/$postId/likesCount")
+              incrementLikesCount(postRef!!)
+          
+              val profileRef = database?.getReference("profiles/$postAuthorId/likesCount")
+              incrementLikesCount(profileRef!!)
+            } else {
+              it.onError(databaseError.toException())
+            }
+          }
+      
+          private fun incrementLikesCount(postRef: DatabaseReference) {
+            postRef.runTransaction(object : Transaction.Handler {
+              override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                val currentValue = mutableData.getValue(Int::class.java)
+                if (currentValue == null) {
+                  mutableData.value = 1
+                } else {
+                  mutableData.value = currentValue + 1
+                }
+            
+                return Transaction.success(mutableData)
+              }
+          
+              override fun onComplete(databaseError: DatabaseError, b: Boolean, dataSnapshot: DataSnapshot) {
+                it.onSuccess(b)
+              }
+            })
+          }
+      
+        })
+      } catch (e: Exception) {
+        it.onError(e)
+      }
+    }
+  }
+  
+  fun getCommentsList(postId: String): Flowable<List<Comment>> {
+    
+    return Flowable.create<List<Comment>>({
+      val databaseReference = database?.getReference("post-comments")?.child(postId)
+      val valueEventListener = databaseReference?.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+          val list = ArrayList<Comment>()
+          for (snapshot in dataSnapshot.children) {
+            val comment = snapshot.getValue(Comment::class.java)
+            list.add(comment!!)
+          }
+  
+          list.sortWith(Comparator { lhs, rhs -> rhs.getCreatedDate().compareTo(lhs.getCreatedDate()) })
+      
+          it.onNext(list)
+      
+        }
+    
+        override fun onCancelled(databaseError: DatabaseError) {
+          it.onError(databaseError.toException())
+        }
+      })
+    }, BackpressureStrategy.BUFFER)
+    //activeListeners.put(valueEventListener, databaseReference)
+    //return valueEventListener
+  }
+  
+  fun createComment(commentText: String, postId: String) : Single<Boolean> {
+    return Single.create<Boolean> {
+      try {
+        val authorId = firebaseAuth.currentUser!!.uid
+        val mCommentsReference = database?.reference?.child("post-comments/$postId")
+        val commentId = mCommentsReference?.push()?.key
+        val comment = Comment()
+        comment.text = commentText
+        comment.id = commentId
+        comment.authorId = authorId
+    
+        mCommentsReference?.child(commentId)?.setValue(comment, object : DatabaseReference.CompletionListener {
+          override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
+            if (databaseError == null) {
+              incrementCommentsCount(postId)
+            } else {
+              it.onError(databaseError.toException())
+            }
+          }
+      
+          private fun incrementCommentsCount(postId: String) {
+            val postRef = database?.getReference("posts/$postId/commentsCount")
+            postRef?.runTransaction(object : Transaction.Handler {
+              override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                val currentValue = mutableData.getValue(Int::class.java)
+                if (currentValue == null) {
+                  mutableData.value = 1
+                } else {
+                  mutableData.value = currentValue + 1
+                }
+            
+                return Transaction.success(mutableData)
+              }
+          
+              override fun onComplete(databaseError: DatabaseError, b: Boolean, dataSnapshot: DataSnapshot) {
+                Timber.d("Updating comments count transaction is completed.")
+                it.onSuccess(true)
+              }
+            })
+          }
+        })
+      } catch (e: Exception) {
+        e.printStackTrace()
+        it.onError(e)
+      }
     }
   }
   

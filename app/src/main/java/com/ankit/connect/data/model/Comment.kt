@@ -6,9 +6,9 @@ import java.util.*
  * Created by ankit on 14/04/18.
  */
 class Comment {
-  private var id: String? = null
-  private var text: String? = null
-  private var authorId: String? = null
+  var id: String? = null
+  var text: String? = null
+  var authorId: String? = null
   private var createdDate: Long = 0
   
   
@@ -20,30 +20,6 @@ class Comment {
     
     this.text = text
     this.createdDate = Calendar.getInstance().timeInMillis
-  }
-  
-  fun getId(): String? {
-    return id
-  }
-  
-  fun setId(id: String) {
-    this.id = id
-  }
-  
-  fun getText(): String? {
-    return text
-  }
-  
-  fun setText(text: String) {
-    this.text = text
-  }
-  
-  fun getAuthorId(): String? {
-    return authorId
-  }
-  
-  fun setAuthorId(authorId: String) {
-    this.authorId = authorId
   }
   
   fun getCreatedDate(): Long {
