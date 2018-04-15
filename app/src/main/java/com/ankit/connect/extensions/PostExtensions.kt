@@ -25,6 +25,7 @@ inline fun Post.toMap(): Map<String, Any> {
   imagePath?.let { result.put("imagePath", it) }
   imageTitle?.let { result.put("imageTitle", it) }
   authorId?.let { result.put("authorId", it) }
+  authorName?.let { result.put("authorName", it) }
   result["commentsCount"] = commentsCount
   result["likesCount"] = likesCount
   result["createdDateText"] = FormatterUtil.getFirebaseDateFormat().format(Date(createdDate))

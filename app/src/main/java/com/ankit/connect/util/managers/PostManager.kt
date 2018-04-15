@@ -7,6 +7,7 @@ import com.ankit.connect.extensions.generateImageTitle
 import com.ankit.connect.store.FirebaseDbHelper
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.UploadTask
 import io.reactivex.Single
 import timber.log.Timber
@@ -37,6 +38,7 @@ class PostManager {
     
         post.imagePath = downloadUrl.toString()
         post.imageTitle = imageTitle
+        post.authorName = FirebaseAuth.getInstance().currentUser?.displayName
         createOrUpdatePost(post)
         e.onSuccess(true)
       })

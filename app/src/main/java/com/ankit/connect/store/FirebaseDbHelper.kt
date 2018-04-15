@@ -212,10 +212,10 @@ class FirebaseDbHelper {
         val authorId = firebaseAuth.currentUser!!.uid
         val mCommentsReference = database?.reference?.child("post-comments/$postId")
         val commentId = mCommentsReference?.push()?.key
-        val comment = Comment()
-        comment.text = commentText
+        val comment = Comment(commentText)
         comment.id = commentId
         comment.authorId = authorId
+        comment.authorName = FirebaseAuth.getInstance().currentUser?.displayName
     
         mCommentsReference?.child(commentId)?.setValue(comment, object : DatabaseReference.CompletionListener {
           override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
@@ -240,7 +240,7 @@ class FirebaseDbHelper {
                 return Transaction.success(mutableData)
               }
           
-              override fun onComplete(databaseError: DatabaseError, b: Boolean, dataSnapshot: DataSnapshot) {
+              override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot) {
                 Timber.d("Updating comments count transaction is completed.")
                 it.onSuccess(true)
               }

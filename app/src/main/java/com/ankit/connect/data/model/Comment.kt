@@ -9,14 +9,15 @@ class Comment {
   var id: String? = null
   var text: String? = null
   var authorId: String? = null
+  var authorName: String? = null
   private var createdDate: Long = 0
   
   
-  fun Comment() {
+  constructor(){
     // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
   }
   
-  fun Comment(text: String) {
+  constructor(text: String) {
     
     this.text = text
     this.createdDate = Calendar.getInstance().timeInMillis

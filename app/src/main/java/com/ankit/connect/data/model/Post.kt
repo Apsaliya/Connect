@@ -12,6 +12,7 @@ data class Post(var title: String? = null) {
   var imagePath: String? = null
   var imageTitle: String? = null
   var authorId: String? = null
+  var authorName: String? = null
   var commentsCount: Long = 0
   var likesCount: Long = 0
   
