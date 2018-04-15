@@ -25,9 +25,6 @@ import timber.log.Timber
  */
 class PostDetailActivity : AppCompatActivity() {
   lateinit var post: Post
-  private var defaultColor: Int = 0
-  private lateinit var inputManager: InputMethodManager
-  private var isEditTextVisible: Boolean = false
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -62,8 +59,4 @@ class PostDetailActivity : AppCompatActivity() {
     }
   }
   
-  private fun setupValues() {
-    inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    isEditTextVisible = false
-  }
 }

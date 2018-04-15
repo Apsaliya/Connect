@@ -15,10 +15,9 @@ data class Post(var title: String? = null) {
   var authorName: String? = null
   var commentsCount: Long = 0
   var likesCount: Long = 0
+  var isLiked: Boolean? = null
   
   init {
     this.createdDate = Date().time
   }
-  
-  
 }

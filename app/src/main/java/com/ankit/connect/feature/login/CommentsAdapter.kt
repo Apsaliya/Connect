@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Comment
 import com.ankit.connect.data.model.Post
@@ -27,6 +28,7 @@ class CommentsAdapter(val comments:  List<Comment>) : RecyclerView.Adapter<Comme
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsAdapter.ViewHolder {
     val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
     return ViewHolder(itemView)
+    Toast.LENGTH_LONG
   }
   
   inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

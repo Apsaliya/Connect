@@ -25,6 +25,7 @@ import com.ankit.connect.extensions.*
 import com.ankit.connect.feature.login.profile.PostDetailActivity
 import com.ankit.connect.feature.login.profile.PostsAdapter
 import com.ankit.connect.store.FirebaseDbHelper
+import com.ankit.connect.util.ItemAnimator
 import com.ankit.connect.util.managers.PostManager
 import com.google.firebase.auth.FirebaseAuth
 import com.sangcomz.fishbun.FishBun
@@ -47,6 +48,7 @@ class CreatePostActivity : AppCompatActivity() {
     setContentView(R.layout.post)
     
     list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    list.itemAnimator = ItemAnimator()
     /*push.setOnClickListener {
       if (checkStoragePermission()) {
         showGallery()
@@ -74,25 +76,7 @@ class CreatePostActivity : AppCompatActivity() {
     override fun onItemClick(view: View, post: Post) {
       val i = Intent(this@CreatePostActivity, PostDetailActivity::class.java)
       Cache.put("data", post)
-      val card = view.findViewById<CardView>(R.id.card_view)
-  
-      val navigationBar = findViewById<View>(android.R.id.navigationBarBackground)
-      val statusBar = findViewById<View>(android.R.id.statusBarBackground)
-  
-      val imagePair = Pair.create(card as View, "tCard")
-  
-      val navPair = Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME)
-      val statusPair = Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME)
-  
-      val pairs = mutableListOf(imagePair, statusPair)
-      if (navigationBar != null) {
-        pairs += navPair
-      }
-  
-      val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@CreatePostActivity,
-          *pairs.toTypedArray())
-      ActivityCompat.startActivity(this@CreatePostActivity, i, options.toBundle())
-      
+      startActivity(i)
     }
   }
   

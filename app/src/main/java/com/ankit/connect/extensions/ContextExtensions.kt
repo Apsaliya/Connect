@@ -2,7 +2,9 @@ package com.ankit.connect.extensions
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
+import android.graphics.Point
 import android.net.ConnectivityManager
+import android.view.WindowManager
 import com.ankit.connect.util.Constants.PREF_NAME
 
 /**
@@ -16,3 +18,11 @@ inline fun Context.hasInternetConnection(): Boolean {
 }
 
 inline fun Context.getPreference() = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+inline fun Context.getScreenHeight(): Int {
+  val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+  val display = wm.defaultDisplay
+  val size = Point()
+  display.getSize(size)
+  return size.y
+}

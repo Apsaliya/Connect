@@ -121,7 +121,7 @@ class FirebaseDbHelper {
               return Transaction.success(mutableData)
             }
         
-            override fun onComplete(databaseError: DatabaseError, b: Boolean, dataSnapshot: DataSnapshot) {
+            override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot) {
              it.onSuccess(b)
             }
           })
@@ -166,7 +166,7 @@ class FirebaseDbHelper {
                 return Transaction.success(mutableData)
               }
           
-              override fun onComplete(databaseError: DatabaseError, b: Boolean, dataSnapshot: DataSnapshot) {
+              override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot) {
                 it.onSuccess(b)
               }
             })
