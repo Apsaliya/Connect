@@ -48,6 +48,8 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.0'
     implementation 'com.sangcomz:FishBun:0.8.6'
     implementation 'com.github.ybq:Android-SpinKit:1.1.0'
+    implementation 'androidx.core:core-ktx:0.3'
+    implementation 'com.android.support:palette-v7:27.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

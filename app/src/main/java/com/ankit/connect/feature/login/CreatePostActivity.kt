@@ -1,15 +1,19 @@
 package com.ankit.connect.feature.login
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.extensions.*
+import com.ankit.connect.feature.login.profile.PostsAdapter
 import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.util.managers.PostManager
 import com.google.firebase.auth.FirebaseAuth
@@ -32,23 +36,35 @@ class CreatePostActivity: AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.post)
-    push.setOnClickListener {
+    
+    list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+    /*push.setOnClickListener {
       if (checkStoragePermission()) {
         showGallery()
       }
-    }
+    }*/
     
-    pull.setOnClickListener {
-      FirebaseDbHelper.getInstance().getPostList(0)
-          .map { t -> t.posts }
-          .subscribeOn(Schedulers.io())
-          .subscribe({
-            pull_count.text = ""+it.size
-          }, {
-            it.printStackTrace()
-          })
-    }
+    /*pull.setOnClickListener {
     
+    }*/
+  
+    FirebaseDbHelper.getInstance().getPostList(0)
+        .map { t -> t.posts }
+        .subscribeOn(Schedulers.io())
+        .subscribe({
+          val adapter = PostsAdapter(this@CreatePostActivity, it)
+          list.adapter = adapter
+          adapter.setOnItemClickListener(listener)
+        }, {
+          it.printStackTrace()
+        })
+    
+  }
+  
+  internal val listener = object : PostsAdapter.OnItemClickListener {
+    override fun onItemClick(view: View, position: Int) {
+    
+    }
   }
   
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

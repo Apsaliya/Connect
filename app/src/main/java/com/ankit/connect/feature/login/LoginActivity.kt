@@ -3,6 +3,10 @@ package com.ankit.connect.feature.login
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.R
 import com.ankit.connect.extensions.hasInternetConnection
@@ -18,6 +22,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
+import androidx.core.content.edit
+import com.ankit.connect.extensions.getPreference
+import com.ankit.connect.util.Constants.LOGGED_IN
+
 
 /**
  * Created by ankit on 13/04/18.
@@ -33,10 +41,35 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_login)
     Timber.plant(Timber.DebugTree())
+    
+    val preferences = getPreference()
+    val authRequired = !preferences.getBoolean(LOGGED_IN, false)
+    if (!authRequired) {
+      val i = Intent(this, CreatePostActivity::class.java)
+      startActivity(i)
+      finish()
+    }
   
     mAuth = FirebaseAuth.getInstance()
     mGoogleApiClient = GAuthHelper.createGoogleApiClient(this)
     google.setOnClickListener {
+      spin_kit.visibility = VISIBLE
+      val anim = AnimationUtils
+          .loadAnimation(this, R.anim.fadout)
+      it.startAnimation(anim)
+      anim.setAnimationListener(object : Animation.AnimationListener {
+        override fun onAnimationEnd(animation: Animation?) {
+          it.visibility = GONE
+        }
+  
+        override fun onAnimationRepeat(animation: Animation?) {
+          //no-op
+        }
+  
+        override fun onAnimationStart(animation: Animation?) {
+          //no-op
+        }
+      })
       signInWithGoogle()
     }
   
@@ -49,12 +82,18 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         ProfileManager.getInstance().getProfileExists(user.uid)
             .subscribe({
               Timber.d("profile exists response : $it")
-              if (it) {
+              val preference = getPreference()
+              preference.edit {
+                putBoolean(LOGGED_IN, true)
+              }
+              FirebaseDbHelper.getInstance()
+                  .addRegistrationToken(FirebaseInstanceId.getInstance().token, user.uid)
+              /*if (it) {
                 FirebaseDbHelper.getInstance()
                     .addRegistrationToken(FirebaseInstanceId.getInstance().token, user.uid)
               } else {
               
-              }
+              }*/
             }, {
              it.printStackTrace()
             })
@@ -97,8 +136,12 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             account!!.photoUrl, 1280)
         firebaseAuthWithGoogle(account)
       } else {
-        Timber.e("login failure")
+        spin_kit.visibility = GONE
+        showSnackBar("Auth error")
       }
+    } else {
+      spin_kit.visibility = GONE
+      google.visibility = VISIBLE
     }
   }
   
@@ -118,6 +161,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             Timber.d("signInWithCredential task unsuccessfull.")
             showSnackBar("Auth error")
           } else {
+            spin_kit.visibility = GONE
+            finish()
             val i = Intent(this@LoginActivity, CreatePostActivity::class.java)
             startActivity(i)
           }

@@ -3,22 +3,11 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/push"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="push"/>
-
-    <Button
-        android:id="@+id/pull"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="push"/>
-
-    <Button
-        android:id="@+id/pull_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="push"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f2f2f2"
+        android:orientation="vertical"/>
 
 </LinearLayout>
