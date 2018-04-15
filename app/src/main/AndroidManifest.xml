@@ -20,6 +20,9 @@
         android:theme="@style/AppTheme">
         <activity android:name=".feature.login.MainActivity"/>
         <activity android:name=".feature.login.CreatePostActivity"/>
+        <activity
+            android:name=".feature.login.profile.PostDetailActivity"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".feature.login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

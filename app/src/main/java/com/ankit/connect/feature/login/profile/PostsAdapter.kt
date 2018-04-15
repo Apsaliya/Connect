@@ -2,7 +2,6 @@ package com.ankit.connect.feature.login.profile
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.support.v4.content.ContextCompat
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.RecyclerView
@@ -14,6 +13,7 @@ import com.ankit.connect.data.model.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.android.synthetic.main.item_feed.view.*
 import kotlinx.android.synthetic.main.row_places.view.*
 
 /**
@@ -26,36 +26,27 @@ class PostsAdapter(var context: Context, val posts: List<Post>) : RecyclerView.A
   override fun getItemCount() = posts.size
   
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-    val itemView = LayoutInflater.from(parent.context).inflate(R.layout.row_places, parent, false)
+    val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_feed, parent, false)
     return ViewHolder(itemView)
   }
   
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     val post = posts[position]
-    holder.itemView.placeName.text = post.title
-    Glide.with(context).asBitmap().load(post.imagePath).
-        into(object : SimpleTarget<Bitmap>() {
-          override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-            holder.itemView.placeImage.setImageBitmap(resource)
-            Palette.from(resource).generate { palette ->
-              val bgColor = palette.getMutedColor(ContextCompat.getColor(context, android.R.color.black))
-              holder.itemView.placeNameHolder.setBackgroundColor(bgColor)
-            }
-          }
-        })
+    holder.itemView.tag = post
+    Glide.with(context).load(post.imagePath).into(holder.itemView.ivFeedCenter)
   }
   
   inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
     
     init {
-      itemView.placeHolder.setOnClickListener(this)
+      itemView.ivFeedCenter.setOnClickListener(this)
     }
     
-    override fun onClick(view: View) = itemClickListener.onItemClick(itemView, adapterPosition)
+    override fun onClick(view: View) = itemClickListener.onItemClick(itemView, itemView.tag as Post)
   }
   
   interface OnItemClickListener {
-    fun onItemClick(view: View, position: Int)
+    fun onItemClick(view: View, post: Post)
   }
   
   fun setOnItemClickListener(itemClickListener: OnItemClickListener) {

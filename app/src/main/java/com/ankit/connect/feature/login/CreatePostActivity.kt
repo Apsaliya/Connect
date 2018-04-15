@@ -1,18 +1,28 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.ankit.connect.feature.login
 
 import android.app.Activity
-import android.content.ClipData
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import com.ankit.connect.util.Cache
+import android.support.v4.app.ActivityCompat
+import android.support.v4.app.ActivityOptionsCompat
+import android.support.v4.util.Pair
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.view.Window
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.extensions.*
+import com.ankit.connect.feature.login.profile.PostDetailActivity
 import com.ankit.connect.feature.login.profile.PostsAdapter
 import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.util.managers.PostManager
@@ -20,7 +30,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.define.Define
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.post.*
 import timber.log.Timber
@@ -29,7 +38,7 @@ import java.util.ArrayList
 /**
  * Created by ankit on 14/04/18.
  */
-class CreatePostActivity: AppCompatActivity() {
+class CreatePostActivity : AppCompatActivity() {
   
   private var uris = ArrayList<Uri>()
   
@@ -47,7 +56,7 @@ class CreatePostActivity: AppCompatActivity() {
     /*pull.setOnClickListener {
     
     }*/
-  
+    
     FirebaseDbHelper.getInstance().getPostList(0)
         .map { t -> t.posts }
         .subscribeOn(Schedulers.io())
@@ -62,8 +71,28 @@ class CreatePostActivity: AppCompatActivity() {
   }
   
   internal val listener = object : PostsAdapter.OnItemClickListener {
-    override fun onItemClick(view: View, position: Int) {
-    
+    override fun onItemClick(view: View, post: Post) {
+      val i = Intent(this@CreatePostActivity, PostDetailActivity::class.java)
+      Cache.put("data", post)
+      val card = view.findViewById<CardView>(R.id.card_view)
+  
+      val navigationBar = findViewById<View>(android.R.id.navigationBarBackground)
+      val statusBar = findViewById<View>(android.R.id.statusBarBackground)
+  
+      val imagePair = Pair.create(card as View, "tCard")
+  
+      val navPair = Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME)
+      val statusPair = Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME)
+  
+      val pairs = mutableListOf(imagePair, statusPair)
+      if (navigationBar != null) {
+        pairs += navPair
+      }
+  
+      val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this@CreatePostActivity,
+          *pairs.toTypedArray())
+      ActivityCompat.startActivity(this@CreatePostActivity, i, options.toBundle())
+      
     }
   }
   
