@@ -8,16 +8,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import com.ankit.connect.util.Cache
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.util.Pair
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import android.view.Window
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Post
@@ -49,15 +42,11 @@ class CreatePostActivity : AppCompatActivity() {
     
     list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     list.itemAnimator = ItemAnimator()
-    /*push.setOnClickListener {
+    fab.setOnClickListener {
       if (checkStoragePermission()) {
         showGallery()
       }
-    }*/
-    
-    /*pull.setOnClickListener {
-    
-    }*/
+    }
     
     FirebaseDbHelper.getInstance().getPostList(0)
         .map { t -> t.posts }
@@ -101,15 +90,13 @@ class CreatePostActivity : AppCompatActivity() {
     when (requestCode) {
       Define.ALBUM_REQUEST_CODE -> if (resultCode == Activity.RESULT_OK) {
         uris = data?.getParcelableArrayListExtra<Uri>(Define.INTENT_PATH) as ArrayList<Uri>
-        savePost("sdsdc", "Asdsd")
+        savePost()
       }
     }
   }
   
-  private fun savePost(title: String, description: String) {
-    val post = Post(title)
-    post.description = description
-    post.authorId = FirebaseAuth.getInstance().currentUser!!.uid
+  private fun savePost() {
+    val post = Post(FirebaseAuth.getInstance().currentUser!!.uid)
     PostManager.getInstance().createOrUpdatePostWithImage(uris[0], post)
         .subscribeOn(Schedulers.io())
         .subscribe({

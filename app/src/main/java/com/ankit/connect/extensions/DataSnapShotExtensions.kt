@@ -30,30 +30,25 @@ inline fun DataSnapshot.toPostListResult(objectMap: Map<String, Any>): PostListR
         continue
       }
       
-      val hasComplain = mapObj.containsKey("hasComplain") && mapObj["hasComplain"] as Boolean
       val createdDate = mapObj["createdDate"] as Long
       
       if (lastItemCreatedDate == 0L || lastItemCreatedDate > createdDate) {
         lastItemCreatedDate = createdDate
       }
       
-      if (!hasComplain) {
-        val post = Post()
-        post.id = key
-        post.title = (mapObj["title"] as String)
-        post.description = (mapObj["description"] as String)
-        post.imagePath = (mapObj["imagePath"] as String)
-        post.imageTitle = (mapObj["imageTitle"] as String)
-        post.authorId = (mapObj["authorId"] as String)
-        post.createdDate = (createdDate)
-        if (mapObj.containsKey("commentsCount")) {
-          post.commentsCount = (mapObj["commentsCount"] as Long)
-        }
-        if (mapObj.containsKey("likesCount")) {
-          post.likesCount = (mapObj["likesCount"] as Long)
-        }
-        list.add(post)
+      val post = Post()
+      post.id = key
+      post.imagePath = (mapObj["imagePath"] as String)
+      post.imageTitle = (mapObj["imageTitle"] as String)
+      post.authorId = (mapObj["authorId"] as String)
+      post.createdDate = (createdDate)
+      if (mapObj.containsKey("commentsCount")) {
+        post.commentsCount = (mapObj["commentsCount"] as Long)
       }
+      if (mapObj.containsKey("likesCount")) {
+        post.likesCount = (mapObj["likesCount"] as Long)
+      }
+      list.add(post)
     }
   }
   

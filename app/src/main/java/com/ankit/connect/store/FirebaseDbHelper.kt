@@ -1,7 +1,6 @@
 package com.ankit.connect.store
 
 import android.net.Uri
-import android.util.Log
 import com.ankit.connect.data.model.Comment
 import com.ankit.connect.data.model.Like
 import com.ankit.connect.data.model.Post
@@ -15,7 +14,6 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.UploadTask
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
-import io.reactivex.FlowableOnSubscribe
 import io.reactivex.Single
 import timber.log.Timber
 import java.util.*
