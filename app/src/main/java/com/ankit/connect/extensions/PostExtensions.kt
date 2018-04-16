@@ -19,8 +19,6 @@ inline fun Post.generateImageTitle() : String {
 inline fun Post.toMap(): Map<String, Any> {
   val result = HashMap<String, Any>()
   
-  title?.let { result.put("title", it) }
-  description?.let { result.put("description", it) }
   createdDate.let { result.put("createdDate", it) }
   imagePath?.let { result.put("imagePath", it) }
   imageTitle?.let { result.put("imageTitle", it) }

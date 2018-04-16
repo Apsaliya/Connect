@@ -11,6 +11,8 @@ import com.ankit.connect.util.Cache
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Post
@@ -26,6 +28,7 @@ import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.define.Define
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.post.*
+import kotlinx.android.synthetic.main.toolbar_main.*
 import timber.log.Timber
 import java.util.ArrayList
 
@@ -96,12 +99,15 @@ class CreatePostActivity : AppCompatActivity() {
   }
   
   private fun savePost() {
+    upLoader.show()
     val post = Post(FirebaseAuth.getInstance().currentUser!!.uid)
     PostManager.getInstance().createOrUpdatePostWithImage(uris[0], post)
         .subscribeOn(Schedulers.io())
         .subscribe({
+          upLoader.hide()
           Timber.d("Post created and uploaded successfully? $it")
         }, {
+          upLoader.hide()
           it.printStackTrace()
         })
   }
