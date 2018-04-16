@@ -264,7 +264,7 @@ class FirebaseDbHelper {
       
       postsQuery.keepSynced(true)
       Timber.d("Adding data listener.")
-      postsQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+      postsQuery.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
           Timber.d("onDataChange event received.")
           val objectMap = dataSnapshot.value as Map<String, Any>?
@@ -295,15 +295,6 @@ class FirebaseDbHelper {
       }
       
       return singleton!!
-    }
-  
-    fun isPostValid(post: Map<String, Any>): Boolean {
-      return (post.containsKey("title")
-          && post.containsKey("description")
-          && post.containsKey("imagePath")
-          && post.containsKey("imageTitle")
-          && post.containsKey("authorId")
-          && post.containsKey("description"))
     }
   }
 }

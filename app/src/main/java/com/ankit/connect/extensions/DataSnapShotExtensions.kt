@@ -4,9 +4,7 @@ package com.ankit.connect.extensions
 
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.data.model.PostListResult
-import com.ankit.connect.store.FirebaseDbHelper.Companion.isPostValid
 import com.google.firebase.database.DataSnapshot
-import timber.log.Timber
 import java.util.*
 
 /**
@@ -24,11 +22,6 @@ inline fun DataSnapshot.toPostListResult(objectMap: Map<String, Any>): PostListR
     val obj = objectMap[key]
     if (obj is Map<*, *>) {
       val mapObj = obj as Map<String, Any>
-      
-      if (!isPostValid(mapObj)) {
-        Timber.e("Invalid post")
-        continue
-      }
       
       val createdDate = mapObj["createdDate"] as Long
       

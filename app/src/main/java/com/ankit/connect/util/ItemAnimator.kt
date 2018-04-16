@@ -84,6 +84,7 @@ class ItemAnimator: DefaultItemAnimator() {
       val holder = newHolder as PostsAdapter.ViewHolder
       val post = holder.itemView.tag as Post
       
+      holder.itemView.btnLike.isEnabled = false
       animateHeartButton(holder)
       //updateLikesCounter(holder, post.likesCount.toInt())
       if (PostsAdapter.ACTION_LIKE_IMAGE_CLICKED == preInfo.updateAction) {
@@ -125,6 +126,7 @@ class ItemAnimator: DefaultItemAnimator() {
       override fun onAnimationEnd(animation: Animator) {
         heartAnimationsMap.remove(holder)
         dispatchChangeFinishedIfAllAnimationsEnded(holder)
+        holder.itemView.btnLike.isEnabled = false
       }
     })
     

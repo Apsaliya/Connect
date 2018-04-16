@@ -28,7 +28,6 @@ class CommentsAdapter(val comments:  List<Comment>) : RecyclerView.Adapter<Comme
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsAdapter.ViewHolder {
     val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
     return ViewHolder(itemView)
-    Toast.LENGTH_LONG
   }
   
   inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
