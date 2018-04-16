@@ -25,10 +25,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.TwitterAuthProvider
-import com.twitter.sdk.android.core.*
-import com.twitter.sdk.android.core.identity.TwitterAuthClient
-
-
+import com.twitter.sdk.android.tweetui.TweetUi
 
 
 /**
@@ -38,8 +35,9 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   private var mAuth: FirebaseAuth? = null
   private var mAuthListener: FirebaseAuth.AuthStateListener? = null
   private var mGoogleApiClient: GoogleApiClient? = null
-  val authConfig = TwitterAuthConfig("kPy9COcD6RfCOTzmK4N2oVTqU",
-      "FlDVCqQMGLy0oaEM8mIfBTx4rm1BfFJhElZ7RjX30BpofHePNb")
+  //val authConfig = TwitterAuthConfig("kPy9COcD6RfCOTzmK4N2oVTqU",
+   //   "FlDVCqQMGLy0oaEM8mIfBTx4rm1BfFJhElZ7RjX30BpofHePNb")
+  //val mTwitterAuthClient = TwitterAuthClient()
   
   
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,14 +45,12 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     setContentView(R.layout.activity_login)
     Timber.plant(Timber.DebugTree())
   
-    val twitterConfig = TwitterConfig.Builder(this)
+    /*val twitterConfig = TwitterConfig.Builder(this)
         .twitterAuthConfig(authConfig)
         .build()
   
-    Twitter.initialize(twitterConfig)
-  
-    val mTwitterAuthClient = TwitterAuthClient()
-  
+    Twitter.initialize(twitterConfig)*/
+    
   
     val preferences = getPreference()
     val authRequired = !preferences.getBoolean(LOGGED_IN, false)
@@ -88,7 +84,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     }
     
     
-    twitter.setOnClickListener {
+    /*twitter.setOnClickListener {
       spin_kit.show()
       mTwitterAuthClient.authorize(this, object : Callback<TwitterSession>() {
         override fun success(result: Result<TwitterSession>?) {
@@ -120,7 +116,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
           showSnackBar("Could not log you in.")
         }
       })
-    }
+    }*/
   
     mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
       Timber.d("firebase auth listener callback.")
@@ -167,6 +163,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
+    //mTwitterAuthClient.onActivityResult(requestCode, resultCode, data)
     if (requestCode == 101) {
       Timber.d("Activity has come back with code 101.")
       val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)

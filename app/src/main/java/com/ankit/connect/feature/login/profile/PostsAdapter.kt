@@ -2,18 +2,14 @@ package com.ankit.connect.feature.login.profile
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Handler
 import android.support.v4.content.ContextCompat
-import android.support.v7.graphics.Palette
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import com.ankit.connect.R
 import android.view.ViewGroup
-import android.widget.ImageView
 import com.ankit.connect.data.model.Post
-import com.ankit.connect.feature.login.MainActivity
 import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.util.Cache
 import com.bumptech.glide.Glide

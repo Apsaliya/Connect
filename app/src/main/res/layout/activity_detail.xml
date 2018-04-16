@@ -1,35 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginEnd="12dp"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/comments"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_container"
         android:orientation="vertical"
-        android:layout_above="@+id/bottom_container"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"/>
 
     <RelativeLayout
         android:id="@+id/bottom_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="12dp"
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/addComment"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_toStartOf="@+id/sendComment"/>
+        <android.support.v7.widget.CardView
+            android:id="@+id/edittext_container"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginEnd="12dp"
+            android:layout_toStartOf="@+id/sendComment"
+            app:cardUseCompatPadding="true"
+            app:cardCornerRadius="16dp">
 
-        <Button
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/addComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="bottom"
+                android:hint="Add a commnet..."
+                android:gravity="bottom"
+                app:backgroundTint="@android:color/transparent" />
+        </android.support.v7.widget.CardView>
+
+        <ImageView
             android:id="@+id/sendComment"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_alignParentEnd="true"/>
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/send_comment" />
 
     </RelativeLayout>
 
