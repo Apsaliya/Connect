@@ -37,13 +37,6 @@ class FirebaseDbHelper {
     return database?.reference!!
   }
   
-  fun addRegistrationToken(token: String?, userId: String) {
-    val databaseReference = getDatabaseReference()
-    val task = databaseReference.child("profiles").child(userId).child("notificationTokens").child(token!!).setValue(true)
-    task.addOnCompleteListener({ task1 ->
-    })
-  }
-  
   fun generatePostId(): String {
     val databaseReference = database?.reference
     return databaseReference?.child("posts")?.push()?.key!!

@@ -7,10 +7,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.R
-import com.ankit.connect.extensions.hasInternetConnection
-import com.ankit.connect.extensions.showSnackBar
 import com.ankit.connect.util.helpers.GAuthHelper
 import com.ankit.connect.util.managers.ProfileManager
 import com.google.android.gms.auth.api.Auth
@@ -19,12 +16,19 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_login.*
 import timber.log.Timber
 import androidx.core.content.edit
-import com.ankit.connect.extensions.getPreference
+import com.ankit.connect.extensions.*
 import com.ankit.connect.util.Constants.LOGGED_IN
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.TwitterAuthProvider
+import com.twitter.sdk.android.core.*
+import com.twitter.sdk.android.core.identity.TwitterAuthClient
+
+
 
 
 /**
@@ -34,14 +38,24 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   private var mAuth: FirebaseAuth? = null
   private var mAuthListener: FirebaseAuth.AuthStateListener? = null
   private var mGoogleApiClient: GoogleApiClient? = null
-  private var profilePhotoUrlLarge: String? = null
+  val authConfig = TwitterAuthConfig("kPy9COcD6RfCOTzmK4N2oVTqU",
+      "FlDVCqQMGLy0oaEM8mIfBTx4rm1BfFJhElZ7RjX30BpofHePNb")
   
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_login)
     Timber.plant(Timber.DebugTree())
-    
+  
+    val twitterConfig = TwitterConfig.Builder(this)
+        .twitterAuthConfig(authConfig)
+        .build()
+  
+    Twitter.initialize(twitterConfig)
+  
+    val mTwitterAuthClient = TwitterAuthClient()
+  
+  
     val preferences = getPreference()
     val authRequired = !preferences.getBoolean(LOGGED_IN, false)
     if (!authRequired) {
@@ -72,6 +86,41 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
       })
       signInWithGoogle()
     }
+    
+    
+    twitter.setOnClickListener {
+      spin_kit.show()
+      mTwitterAuthClient.authorize(this, object : Callback<TwitterSession>() {
+        override fun success(result: Result<TwitterSession>?) {
+          val credential = TwitterAuthProvider.getCredential(
+              result?.data?.authToken?.token!!,
+              result.data?.authToken?.secret!!)
+  
+          mAuth?.signInWithCredential(credential)!!
+              .addOnCompleteListener(this@LoginActivity) { task ->
+      
+                // If sign in fails, display a message to the user. If sign in succeeds
+                // the auth state listener will be notified and logic to handle the
+                // signed in user can be handled in the listener.
+                Timber.d("signInWithCredential task completed.")
+      
+                if (!task.isSuccessful) {
+                  Timber.d("signInWithCredential task unsuccessfull.")
+                  showSnackBar("Auth error")
+                } else {
+                  spin_kit.hide()
+                  finish()
+                  val i = Intent(this@LoginActivity, CreatePostActivity::class.java)
+                  startActivity(i)
+                }
+              }
+        }
+  
+        override fun failure(exception: TwitterException?) {
+          showSnackBar("Could not log you in.")
+        }
+      })
+    }
   
     mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
       Timber.d("firebase auth listener callback.")
@@ -86,16 +135,9 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
               preference.edit {
                 putBoolean(LOGGED_IN, true)
               }
-              FirebaseDbHelper.getInstance()
-                  .addRegistrationToken(FirebaseInstanceId.getInstance().token, user.uid)
-              /*if (it) {
-                FirebaseDbHelper.getInstance()
-                    .addRegistrationToken(FirebaseInstanceId.getInstance().token, user.uid)
-              } else {
-              
-              }*/
             }, {
              it.printStackTrace()
+              showSnackBar("Could not log you in.")
             })
       } else {
         // Profile is signed out
@@ -132,9 +174,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         Timber.d("Successfull login")
         // Google Sign In was successful, authenticate with Firebase
         val account = result.signInAccount
-        profilePhotoUrlLarge = String.format(getString(R.string.google_large_image_url_pattern),
-            account!!.photoUrl, 1280)
-        firebaseAuthWithGoogle(account)
+        firebaseAuthWithGoogle(account!!)
       } else {
         spin_kit.visibility = GONE
         showSnackBar("Auth error")
