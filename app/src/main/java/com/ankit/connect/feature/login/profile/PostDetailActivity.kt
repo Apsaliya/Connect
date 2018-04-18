@@ -12,6 +12,8 @@ import com.ankit.connect.R
 import android.view.inputmethod.InputMethodManager
 import com.ankit.connect.data.model.Comment
 import com.ankit.connect.data.model.Post
+import com.ankit.connect.extensions.hide
+import com.ankit.connect.extensions.show
 import com.ankit.connect.extensions.showSnackBar
 import com.ankit.connect.feature.login.CommentsAdapter
 import com.ankit.connect.feature.login.CommentsViewModel
@@ -37,10 +39,12 @@ class PostDetailActivity : AppCompatActivity() {
     post = Cache.get("data") as Post
     viewModel = ViewModelProviders.of(this).get(CommentsViewModel::class.java)
   
+    spinKitComment.show()
     viewModel.getCommnets(post.id!!)
     
     viewModel.viewState.observe(this, Observer {
       if (it?.comments != null) {
+        spinKitComment.hide()
         if (comments.adapter == null) {
           val adapter = CommentsAdapter(it.comments)
           comments.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)

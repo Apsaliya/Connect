@@ -4,13 +4,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Comment
-import com.ankit.connect.data.model.Post
-import com.ankit.connect.feature.login.profile.PostsAdapter
+import com.ankit.connect.util.FormatterUtil.getRelativeTimeSpanString
 import kotlinx.android.synthetic.main.item_comment.view.*
-import kotlinx.android.synthetic.main.item_feed.view.*
 
 /**
  * Created by ankit on 15/04/18.
@@ -20,7 +17,7 @@ class CommentsAdapter(var comments:  List<Comment>) : RecyclerView.Adapter<Comme
     val comment = comments[position]
     holder.itemView.author_name.text = comment.authorName
     holder.itemView.comment_text.text = comment.text
-    holder.itemView.timestamp.text = comment.getCreatedDate().toString()
+    holder.itemView.timestamp.text = getRelativeTimeSpanString(holder.itemView.context, comment.getCreatedDate())
   }
   
   override fun getItemCount() = comments.size

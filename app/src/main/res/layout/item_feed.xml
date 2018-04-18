@@ -13,11 +13,28 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <TextView
             android:id="@+id/ivUserProfile"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_feed_top" />
+            android:textColor="#000000"
+            android:text="adaa"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/timeStamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#757575"
+            android:text="adaa"
+            android:textSize="12sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:textStyle="bold"/>
 
         <com.ankit.connect.views.SquaredFrameLayout
             android:id="@+id/vImageRoot"
@@ -82,7 +99,8 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_heart_small_blue" />
+                    android:src="@drawable/ic_heart_small_blue"
+                    android:layout_marginEnd="6dp"/>
 
                 <TextView
                     android:id="@+id/likesCount"

@@ -38,6 +38,9 @@ inline fun DataSnapshot.toPostListResult(objectMap: Map<String, Any>): PostListR
       if (mapObj.containsKey("commentsCount")) {
         post.commentsCount = (mapObj["commentsCount"] as Long)
       }
+      if (mapObj.containsKey("authorName")) {
+        post.authorName = (mapObj["authorName"] as String)
+      }
       if (mapObj.containsKey("likesCount")) {
         post.likesCount = (mapObj["likesCount"] as Long)
       }

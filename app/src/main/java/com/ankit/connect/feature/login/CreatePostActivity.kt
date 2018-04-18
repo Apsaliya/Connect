@@ -28,7 +28,6 @@ import com.sangcomz.fishbun.define.Define
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.post.*
 import kotlinx.android.synthetic.main.toolbar_main.*
-import timber.log.Timber
 import java.util.ArrayList
 
 /**
@@ -52,6 +51,7 @@ class CreatePostActivity : AppCompatActivity() {
       }
     }
     
+    spinKitFeed.show()
     viewModel.getAllNotices()
     
     viewModel.viewState.observe(this, Observer {
@@ -64,7 +64,7 @@ class CreatePostActivity : AppCompatActivity() {
       }
       
       if (it.posts != null) {
-        Timber.d("dispatching updates event : ")
+        spinKitFeed.hide()
         val adapter = list.adapter
         if (adapter != null) {
           (adapter as PostsAdapter).dispatchUpdates(it.posts)
@@ -78,7 +78,6 @@ class CreatePostActivity : AppCompatActivity() {
       }
       
       if (it.single != null && list.adapter != null) {
-        Timber.d("refresh event : " + it.single.second)
         if (it.single.second != PostsAdapter.ACTION_DEFAULT) {
           list.adapter.notifyItemChanged(it.single.first, it.single.second)
         } else {
@@ -90,7 +89,6 @@ class CreatePostActivity : AppCompatActivity() {
   
   internal val listener = object : PostsAdapter.OnItemClickListener {
     override fun onItemClick(clickListener: PostsAdapter.ClickListener) {
-      Timber.d("RonItemClick")
       when (clickListener) {
         is PostsAdapter.ClickListener.LikeClick -> viewModel.handleLikeClick(clickListener.post, clickListener.position)
         is PostsAdapter.ClickListener.ImageClick -> viewModel.handleImageClick(clickListener.post, clickListener.position)
@@ -112,7 +110,6 @@ class CreatePostActivity : AppCompatActivity() {
             showGallery()
           } else {
             Toast.makeText(this, R.string.permission_deny_msg, Toast.LENGTH_SHORT).show()
-            finish()
           }
         }
       }

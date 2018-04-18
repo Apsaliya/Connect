@@ -9,6 +9,8 @@ import com.ankit.connect.R
 import android.view.ViewGroup
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.feature.login.CreatePostViewModel
+import com.ankit.connect.util.FormatterUtil
+import com.ankit.connect.util.FormatterUtil.getRelativeTimeSpanString
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -49,6 +51,8 @@ internal class PostsAdapter(var context: Context, var posts: ArrayList<Post>, va
     val post = posts[position]
     Glide.with(context).load(post.imagePath).into(holder.itemView.ivFeedCenter)
     holder.itemView.likesCount.text = post.likesCount.toString()
+    holder.itemView.ivUserProfile.text = post.authorName
+    holder.itemView.timeStamp.text = getRelativeTimeSpanString(context, post.createdDate)
     if (post.isLiked != null) {
       if (post.isLiked!!) {
         holder.itemView.btnLike.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_heart_red))

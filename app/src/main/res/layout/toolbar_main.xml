@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize">
+    android:layout_height="?android:attr/actionBarSize"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:contentInsetEnd="0dp"
+    app:contentInsetLeft="0dp"
+    app:contentInsetRight="0dp"
+    app:contentInsetStart="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -11,6 +16,7 @@
             android:layout_width="100dp"
             android:layout_height="44dp"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
             android:src="@drawable/connect" />
 
         <LinearLayout
@@ -42,6 +48,13 @@
                 android:textStyle="italic" />
 
         </LinearLayout>
+
+        <View
+            android:id="@+id/shadow_searchbox"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/topbar_shadow" />
     </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>
