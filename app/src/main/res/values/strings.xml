@@ -4,6 +4,9 @@
     <string name="plus">Add</string>
     <string name="permission_deny_msg">Permission denied. Can not access gallery images.</string>
     <string name="label_all">All</string>
+    <string name="unknown_error">Something went wrong. Please try again later.</string>
+    <string name="no_internet">No internet available. Please connect to internet and try again.</string>
+    <string name="label_auth_failed">Auth failed. Please try again later.</string>
     <string name="label_select_image">Select Images</string>
     <string name="label_no_select">Please select three or more!</string>
     <plurals name="likes_count">

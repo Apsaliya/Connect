@@ -19,10 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppThemeConnect">
-        <activity android:name=".feature.login.MainActivity"/>
-        <activity android:name=".feature.login.CreatePostActivity"/>
+        <activity android:name=".feature.feed.ui.FeedActivity"/>
         <activity
-            android:name=".feature.login.profile.PostDetailActivity"
+            android:name=".feature.comments.ui.CommentsActivity"
             android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".feature.login.LoginActivity">
             <intent-filter>

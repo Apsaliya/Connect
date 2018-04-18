@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import com.ankit.connect.R
-import com.ankit.connect.util.helpers.GAuthHelper
+import com.ankit.connect.feature.login.helpers.GAuthHelper
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.ConnectionResult
@@ -14,9 +14,9 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.activity_login.*
-import timber.log.Timber
 import androidx.core.content.edit
 import com.ankit.connect.extensions.*
+import com.ankit.connect.feature.feed.ui.FeedActivity
 import com.ankit.connect.util.Constants.LOGGED_IN
 import com.google.firebase.auth.TwitterAuthProvider
 import com.jakewharton.rxbinding2.view.clicks
@@ -34,7 +34,6 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   
   val mTwitterAuthClient = TwitterAuthClient()
   
-  
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_login)
@@ -42,7 +41,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     val preferences = getPreference()
     val authRequired = !preferences.getBoolean(LOGGED_IN, false)
     if (!authRequired) {
-      val i = Intent(this, CreatePostActivity::class.java)
+      val i = Intent(this, FeedActivity::class.java)
       startActivity(i)
       finish()
     }
@@ -103,7 +102,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
               auth?.signInWithCredential(credential)!!
                   .addOnCompleteListener(this@LoginActivity) { task ->
                     if (!task.isSuccessful) {
-                      showSnackBar("Auth error")
+                      showSnackBar(getString(R.string.label_auth_failed))
                     } else {
                       onFirebaseAuthSuccess()
                     }
@@ -111,7 +110,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             }
             
             override fun failure(exception: TwitterException?) {
-              showSnackBar("Could not log you in.")
+              showSnackBar(getString(R.string.label_auth_failed))
             }
           })
         }
@@ -135,7 +134,6 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     authListener?.let { auth?.addAuthStateListener(it) }
     
     if (googleApiClient != null) {
-      Timber.d("connecting google api client.")
       googleApiClient?.connect()
     }
   }
@@ -160,7 +158,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         firebaseAuthWithGoogle(account!!)
       } else {
         spin_kit.hide()
-        showSnackBar("Auth error")
+        showSnackBar(getString(R.string.label_auth_failed))
       }
     } else {
       spin_kit.hide()
@@ -171,7 +169,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   private fun onFirebaseAuthSuccess() {
     spin_kit.hide()
     finish()
-    val i = Intent(this@LoginActivity, CreatePostActivity::class.java)
+    val i = Intent(this@LoginActivity, FeedActivity::class.java)
     startActivity(i)
   }
   
@@ -180,7 +178,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     auth?.signInWithCredential(credential)!!
         .addOnCompleteListener(this) { task ->
           if (!task.isSuccessful) {
-            showSnackBar("Auth error")
+            showSnackBar(getString(R.string.label_auth_failed))
           } else {
             onFirebaseAuthSuccess()
           }
@@ -192,11 +190,11 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
       val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
       startActivityForResult(signInIntent, 101)
     } else {
-      showSnackBar("No internet!")
+      getString(R.string.no_internet)
     }
   }
   
   override fun onConnectionFailed(p0: ConnectionResult) {
-    showSnackBar("Connection failed")
+    showSnackBar(getString(R.string.label_auth_failed))
   }
 }

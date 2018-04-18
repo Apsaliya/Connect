@@ -1,12 +1,20 @@
 package com.ankit.connect.store
 
 import android.net.Uri
-import com.ankit.connect.data.model.Comment
-import com.ankit.connect.data.model.Like
-import com.ankit.connect.data.model.Post
-import com.ankit.connect.data.model.PostListResult
+import com.ankit.connect.feature.comments.model.Comment
+import com.ankit.connect.feature.feed.models.Like
+import com.ankit.connect.feature.feed.models.Post
+import com.ankit.connect.feature.feed.models.PostListResult
 import com.ankit.connect.extensions.toMap
 import com.ankit.connect.extensions.toPostListResult
+import com.ankit.connect.feature.feed.models.Post.Companion.KEY_CREATED_DATE
+import com.ankit.connect.util.Constants.BASE_PATH_IMAGES
+import com.ankit.connect.util.Constants.BASE_POSTS_REFRENCE_PATH
+import com.ankit.connect.util.Constants.CACHE_CONTROL_STRING
+import com.ankit.connect.util.Constants.CHILD_POSTS
+import com.ankit.connect.util.Constants.CHILD_POSTS_COMMENTS
+import com.ankit.connect.util.Constants.CHILD_POSTS_LIKES
+import com.ankit.connect.util.Constants.STORAGE_URL
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -15,15 +23,17 @@ import com.google.firebase.storage.UploadTask
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Single
-import timber.log.Timber
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by ankit on 13/04/18.
  */
 class FirebaseDbHelper {
+  @Suppress("MemberVisibilityCanBePrivate")
   internal var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
   private var database: FirebaseDatabase? = null
+  @Suppress("MemberVisibilityCanBePrivate")
   internal var storage: FirebaseStorage
   
   init {
@@ -39,15 +49,15 @@ class FirebaseDbHelper {
   
   fun generatePostId(): String {
     val databaseReference = database?.reference
-    return databaseReference?.child("posts")?.push()?.key!!
+    return databaseReference?.child(CHILD_POSTS)?.push()?.key!!
   }
   
   fun uploadImage(uri: Uri, imageTitle: String): UploadTask {
-    val storageRef = storage.getReferenceFromUrl("gs://connect-1d914.appspot.com")
-    val riversRef = storageRef.child("images/$imageTitle")
+    val storageRef = storage.getReferenceFromUrl(STORAGE_URL)
+    val riversRef = storageRef.child(BASE_PATH_IMAGES + imageTitle)
     // Create file metadata including the content type
     val metadata = StorageMetadata.Builder()
-        .setCacheControl("max-age=7776000, Expires=7776000, public, must-revalidate")
+        .setCacheControl(CACHE_CONTROL_STRING)
         .build()
     
     return riversRef.putFile(uri, metadata)
@@ -59,7 +69,7 @@ class FirebaseDbHelper {
       
       val postValues = post.toMap()
       val childUpdates = HashMap<String, Any>()
-      childUpdates["/posts/" + post.id] = postValues
+      childUpdates[BASE_POSTS_REFRENCE_PATH + post.id] = postValues
       
       databaseReference?.updateChildren(childUpdates)
     } catch (e: Exception) {
@@ -69,7 +79,7 @@ class FirebaseDbHelper {
   
   fun hasCurrentUserLikeSingleValue(postId: String, userId: String) : Single<Boolean> {
     return Single.create<Boolean> {
-      val databaseReference = database?.getReference("post-likes")?.child(postId)?.child(userId)
+      val databaseReference = database?.getReference(CHILD_POSTS_LIKES)?.child(postId)?.child(userId)
       databaseReference?.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
           it.onSuccess(dataSnapshot.exists())
@@ -85,7 +95,7 @@ class FirebaseDbHelper {
   fun removeLike(postId: String, postAuthorId: String): Single<Boolean> {
     return Single.create<Boolean> {
       val authorId = firebaseAuth.currentUser!!.uid
-      val mLikesReference = database?.reference?.child("post-likes")?.child(postId)?.child(authorId)
+      val mLikesReference = database?.reference?.child(CHILD_POSTS_LIKES)?.child(postId)?.child(authorId)
       mLikesReference?.removeValue(object : DatabaseReference.CompletionListener {
         override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
           if (databaseError == null) {
@@ -104,9 +114,9 @@ class FirebaseDbHelper {
             override fun doTransaction(mutableData: MutableData): Transaction.Result {
               val currentValue = mutableData.getValue(Long::class.java)
               if (currentValue == null) {
-                mutableData.setValue(0)
+                mutableData.value = 0
               } else {
-                mutableData.setValue(currentValue - 1)
+                mutableData.value = currentValue - 1
               }
           
               return Transaction.success(mutableData)
@@ -125,7 +135,7 @@ class FirebaseDbHelper {
     return Single.create<Boolean> {
       try {
         val authorId = firebaseAuth.currentUser!!.uid
-        val mLikesReference = database?.getReference()?.child("post-likes")?.child(postId)?.child(authorId)
+        val mLikesReference = database?.reference?.child(CHILD_POSTS_LIKES)?.child(postId)?.child(authorId)
         mLikesReference?.push()
         val id = mLikesReference?.push()?.key
         val like = Like(authorId)
@@ -136,9 +146,6 @@ class FirebaseDbHelper {
             if (databaseError == null) {
               val postRef = database?.getReference("posts/$postId/likesCount")
               incrementLikesCount(postRef!!)
-          
-              val profileRef = database?.getReference("profiles/$postAuthorId/likesCount")
-              incrementLikesCount(profileRef!!)
             } else {
               it.onError(databaseError.toException())
             }
@@ -173,7 +180,7 @@ class FirebaseDbHelper {
   fun getCommentsList(postId: String): Flowable<List<Comment>> {
     
     return Flowable.create<List<Comment>>({
-      val databaseReference = database?.getReference("post-comments")?.child(postId)
+      val databaseReference = database?.getReference(CHILD_POSTS_COMMENTS)?.child(postId)
       val valueEventListener = databaseReference?.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
           val list = ArrayList<Comment>()
@@ -193,8 +200,6 @@ class FirebaseDbHelper {
         }
       })
     }, BackpressureStrategy.BUFFER)
-    //activeListeners.put(valueEventListener, databaseReference)
-    //return valueEventListener
   }
   
   fun createComment(commentText: String, postId: String) : Single<Boolean> {
@@ -232,7 +237,6 @@ class FirebaseDbHelper {
               }
           
               override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot) {
-                Timber.d("Updating comments count transaction is completed.")
                 it.onSuccess(true)
               }
             })
@@ -247,32 +251,20 @@ class FirebaseDbHelper {
   
   fun getPostList(date: Long): Flowable<PostListResult> {
     return Flowable.create<PostListResult>({
-      val databaseReference = database?.getReference("posts")
+      val databaseReference = database?.getReference(CHILD_POSTS)
       val postsQuery: Query
-      postsQuery = if (date == 0L) {
-        databaseReference?.limitToLast(10)?.orderByChild("createdDate")!!
-      } else {
-        databaseReference?.limitToLast(10)?.endAt(date.toDouble())?.orderByChild("createdDate")!!
-      }
+      postsQuery = databaseReference?.orderByChild(KEY_CREATED_DATE)!!
       
       postsQuery.keepSynced(true)
-      Timber.d("Adding data listener.")
       postsQuery.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-          Timber.d("onDataChange event received.")
           val objectMap = dataSnapshot.value as Map<String, Any>?
           val result = dataSnapshot.toPostListResult(objectMap = objectMap!!)
-          
-          if (result.getPosts().isEmpty() && result.isMoreDataAvailable()) {
-            getPostList(result.getLastItemCreatedDate() - 1)
-          } else {
-            Timber.d("list is not empty. invoking subscriber")
-            it.onNext(result)
-          }
+  
+          it.onNext(result)
         }
         
         override fun onCancelled(databaseError: DatabaseError) {
-          Timber.d("onCancelled event received.")
           it.onError(databaseError.toException())
         }
       })

@@ -3,6 +3,8 @@ package com.ankit.connect
 import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
+import com.ankit.connect.util.Constants.TWITTER_KEY
+import com.ankit.connect.util.Constants.TWITTER_SECRET
 import com.twitter.sdk.android.core.Twitter
 import com.twitter.sdk.android.core.TwitterAuthConfig
 import com.twitter.sdk.android.core.TwitterConfig
@@ -13,8 +15,8 @@ import timber.log.Timber
  */
 class App : Application() {
   
-  val authConfig = TwitterAuthConfig("kPy9COcD6RfCOTzmK4N2oVTqU",
-      "FlDVCqQMGLy0oaEM8mIfBTx4rm1BfFJhElZ7RjX30BpofHePNb")
+  val authConfig = TwitterAuthConfig(TWITTER_KEY,
+      TWITTER_SECRET)
   
   override fun onCreate() {
     super.onCreate()
