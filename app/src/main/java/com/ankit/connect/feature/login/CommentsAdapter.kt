@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_feed.view.*
 /**
  * Created by ankit on 15/04/18.
  */
-class CommentsAdapter(val comments:  List<Comment>) : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
+class CommentsAdapter(var comments:  List<Comment>) : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
   override fun onBindViewHolder(holder: CommentsAdapter.ViewHolder, position: Int) {
     val comment = comments[position]
     holder.itemView.author_name.text = comment.authorName
@@ -28,6 +28,11 @@ class CommentsAdapter(val comments:  List<Comment>) : RecyclerView.Adapter<Comme
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsAdapter.ViewHolder {
     val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
     return ViewHolder(itemView)
+  }
+  
+  fun dispatchUpdates(newCommnets: List<Comment>) {
+    this.comments = newCommnets
+    notifyDataSetChanged()
   }
   
   inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

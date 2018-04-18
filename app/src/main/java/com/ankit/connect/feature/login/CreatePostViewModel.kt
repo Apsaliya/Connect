@@ -30,7 +30,7 @@ internal class CreatePostViewModel : BaseViewModel() {
   )
   
   fun getAllNotices() {
-    FirebaseDbHelper.getInstance().getPostList(0)
+    addDisposible(FirebaseDbHelper.getInstance().getPostList(0)
         .map { t -> t.posts }
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -42,11 +42,11 @@ internal class CreatePostViewModel : BaseViewModel() {
           }
         }, {
           it.printStackTrace()
-        })
+        }))
   }
   
   fun getLikeRemote(post: Post, position: Int) {
-    FirebaseDbHelper.getInstance().hasCurrentUserLikeSingleValue(post.id!!, FirebaseAuth.getInstance().currentUser?.uid!!)
+    addDisposible(FirebaseDbHelper.getInstance().hasCurrentUserLikeSingleValue(post.id!!, FirebaseAuth.getInstance().currentUser?.uid!!)
         .subscribeOn(Schedulers.io())
         .subscribe({
           post.isLiked = it
@@ -54,7 +54,7 @@ internal class CreatePostViewModel : BaseViewModel() {
           viewState.value = ViewState(single = Pair(position, PostsAdapter.ACTION_DEFAULT))
         }, {
           it.printStackTrace()
-        })
+        }))
   }
   
   private fun handleIncrement(post: Post, position: Int, action: String) {
@@ -73,7 +73,7 @@ internal class CreatePostViewModel : BaseViewModel() {
   
   private fun createLike(post: Post, position: Int) {
     val currentUser = FirebaseAuth.getInstance().currentUser
-    FirebaseDbHelper.getInstance().createOrUpdateLike(post.id!!, currentUser?.uid!!)
+    addDisposible(FirebaseDbHelper.getInstance().createOrUpdateLike(post.id!!, currentUser?.uid!!)
         .subscribeOn(Schedulers.io())
         .subscribe({
           if (!it) {
@@ -81,12 +81,12 @@ internal class CreatePostViewModel : BaseViewModel() {
           }
         }, {
           handleDecrement(post, position, PostsAdapter.ACTION_DEFAULT)
-        })
+        }))
   }
   
   private fun removeLike(post: Post, position: Int) {
     val currentUser = FirebaseAuth.getInstance().currentUser
-    FirebaseDbHelper.getInstance().removeLike(post.id!!, currentUser?.uid!!)
+    addDisposible(FirebaseDbHelper.getInstance().removeLike(post.id!!, currentUser?.uid!!)
         .subscribeOn(Schedulers.io())
         .subscribe({
           if (!it) {
@@ -94,7 +94,7 @@ internal class CreatePostViewModel : BaseViewModel() {
           }
         }, {
           handleIncrement(post, position, PostsAdapter.ACTION_DEFAULT)
-        })
+        }))
   }
   
   fun handleImageClick(post: Post, position: Int) {
