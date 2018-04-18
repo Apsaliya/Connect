@@ -63,6 +63,9 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.1.1'
     compileOnly 'com.twitter.sdk.android:twitter-core:3.2.0'
     implementation 'com.twitter.sdk.android:twitter:3.2.0'
+    implementation "android.arch.lifecycle:runtime:1.1.1"
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
     // Twitter Android SDK (only required for Twitter Login)
 }
 
