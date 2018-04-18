@@ -3,6 +3,8 @@
 package com.ankit.connect.feature.login
 
 import android.app.Activity
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -10,16 +12,13 @@ import android.os.Bundle
 import com.ankit.connect.util.Cache
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.support.v7.widget.LinearLayoutManager.VERTICAL
 import android.widget.Toast
 import com.ankit.connect.R
 import com.ankit.connect.data.model.Post
 import com.ankit.connect.extensions.*
 import com.ankit.connect.feature.login.profile.PostDetailActivity
 import com.ankit.connect.feature.login.profile.PostsAdapter
-import com.ankit.connect.store.FirebaseDbHelper
 import com.ankit.connect.util.ItemAnimator
 import com.ankit.connect.util.managers.PostManager
 import com.google.firebase.auth.FirebaseAuth
@@ -38,11 +37,13 @@ import java.util.ArrayList
 class CreatePostActivity : AppCompatActivity() {
   
   private var uris = ArrayList<Uri>()
+  private lateinit var viewModel: CreatePostViewModel
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.post)
-    
+    viewModel = ViewModelProviders.of(this).get(CreatePostViewModel::class.java)
+  
     list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     list.itemAnimator = ItemAnimator()
     fab.setOnClickListener {
@@ -51,24 +52,54 @@ class CreatePostActivity : AppCompatActivity() {
       }
     }
     
-    FirebaseDbHelper.getInstance().getPostList(0)
-        .map { t -> t.posts }
-        .subscribeOn(Schedulers.io())
-        .subscribe({
-          val adapter = PostsAdapter(this@CreatePostActivity, it)
-          list.adapter = adapter
-          adapter.setOnItemClickListener(listener)
-        }, {
-          it.printStackTrace()
-        })
+    viewModel.getAllNotices()
     
+    viewModel.viewState.observe(this, Observer {
+      if (it?.showError!!) {
+        if (it.errorMessage != null) {
+          showSnackBar(it.errorMessage)
+        } else {
+          showSnackBar("Something went wrong")
+        }
+      }
+      
+      if (it.posts != null) {
+        Timber.d("dispatching updates event : ")
+        val adapter = list.adapter
+        if (adapter != null) {
+          (adapter as PostsAdapter).dispatchUpdates(it.posts)
+        } else {
+          val newAdapter = PostsAdapter(this@CreatePostActivity, it.posts, viewModel)
+          list.layoutManager = LinearLayoutManager(this@CreatePostActivity, VERTICAL, false)
+          newAdapter.itemClickListener = listener
+          list.itemAnimator = ItemAnimator()
+          list.adapter = newAdapter
+        }
+      }
+      
+      if (it.single != null && list.adapter != null) {
+        Timber.d("refresh event : " + it.single.second)
+        if (it.single.second != PostsAdapter.ACTION_DEFAULT) {
+          list.adapter.notifyItemChanged(it.single.first, it.single.second)
+        } else {
+          list.adapter.notifyItemChanged(it.single.first)
+        }
+      }
+    })
   }
   
   internal val listener = object : PostsAdapter.OnItemClickListener {
-    override fun onItemClick(view: View, post: Post) {
-      val i = Intent(this@CreatePostActivity, PostDetailActivity::class.java)
-      Cache.put("data", post)
-      startActivity(i)
+    override fun onItemClick(clickListener: PostsAdapter.ClickListener) {
+      Timber.d("RonItemClick")
+      when (clickListener) {
+        is PostsAdapter.ClickListener.LikeClick -> viewModel.handleLikeClick(clickListener.post, clickListener.position)
+        is PostsAdapter.ClickListener.ImageClick -> viewModel.handleImageClick(clickListener.post, clickListener.position)
+        is PostsAdapter.ClickListener.CommentClick -> {
+          val i = Intent(this@CreatePostActivity, PostDetailActivity::class.java)
+          Cache.put("data", clickListener.post)
+          startActivity(i)
+        }
+      }
     }
   }
   
@@ -105,7 +136,6 @@ class CreatePostActivity : AppCompatActivity() {
         .subscribeOn(Schedulers.io())
         .subscribe({
           upLoader.hide()
-          Timber.d("Post created and uploaded successfully? $it")
         }, {
           upLoader.hide()
           it.printStackTrace()

@@ -7,7 +7,7 @@ import java.util.ArrayList
  */
 class PostListResult {
   internal var isMoreDataAvailable: Boolean = false
-  internal var posts: List<Post> = ArrayList()
+  internal var posts = ArrayList<Post>()
   internal var lastItemCreatedDate: Long = 0
   
   fun isMoreDataAvailable(): Boolean {
@@ -18,11 +18,11 @@ class PostListResult {
     isMoreDataAvailable = moreDataAvailable
   }
   
-  fun getPosts(): List<Post> {
+  fun getPosts(): ArrayList<Post> {
     return posts
   }
   
-  fun setPosts(posts: List<Post>) {
+  fun setPosts(posts: ArrayList<Post>) {
     this.posts = posts
   }
   
