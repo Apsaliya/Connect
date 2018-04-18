@@ -1,6 +1,7 @@
 package com.ankit.connect.feature.login.profile
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -8,10 +9,17 @@ import android.view.View
 import com.ankit.connect.R
 import android.view.ViewGroup
 import com.ankit.connect.data.model.Post
+import com.ankit.connect.extensions.hide
+import com.ankit.connect.extensions.show
 import com.ankit.connect.feature.login.CreatePostViewModel
 import com.ankit.connect.util.FormatterUtil
 import com.ankit.connect.util.FormatterUtil.getRelativeTimeSpanString
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.item_feed.view.*
@@ -36,7 +44,6 @@ internal class PostsAdapter(var context: Context, var posts: ArrayList<Post>, va
     super.setHasStableIds(true)
   }
   
-  
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_feed, parent, false)
     return ViewHolder(itemView)
@@ -49,7 +56,21 @@ internal class PostsAdapter(var context: Context, var posts: ArrayList<Post>, va
   
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     val post = posts[position]
-    Glide.with(context).load(post.imagePath).into(holder.itemView.ivFeedCenter)
+    holder.itemView.spinKitImage.show()
+    Glide.with(context)
+        .load(post.imagePath)
+        .listener(object : RequestListener<Drawable> {
+          override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+            holder.itemView.spinKitImage.hide()
+            return false
+          }
+          
+          override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+            holder.itemView.spinKitImage.hide()
+            return false
+          }
+        })
+        .into(holder.itemView.ivFeedCenter)
     holder.itemView.likesCount.text = post.likesCount.toString()
     holder.itemView.ivUserProfile.text = post.authorName
     holder.itemView.timeStamp.text = getRelativeTimeSpanString(context, post.createdDate)
@@ -63,6 +84,11 @@ internal class PostsAdapter(var context: Context, var posts: ArrayList<Post>, va
       viewModel.getLikeRemote(post, position)
     }
     holder.itemView.tag = post
+  }
+  
+  override fun onViewRecycled(holder: ViewHolder) {
+    super.onViewRecycled(holder)
+    holder.itemView.spinKitImage.hide()
   }
   
   inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -93,8 +119,8 @@ internal class PostsAdapter(var context: Context, var posts: ArrayList<Post>, va
   }
   
   sealed class ClickListener {
-    data class LikeClick(val post: Post, val position: Int): ClickListener()
-    data class ImageClick(val post: Post,val position: Int): ClickListener()
-    data class CommentClick(val post: Post): ClickListener()
+    data class LikeClick(val post: Post, val position: Int) : ClickListener()
+    data class ImageClick(val post: Post, val position: Int) : ClickListener()
+    data class CommentClick(val post: Post) : ClickListener()
   }
 }

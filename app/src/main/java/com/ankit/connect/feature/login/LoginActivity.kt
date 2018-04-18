@@ -55,26 +55,32 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     listenAuthState()
   }
   
+  private fun hideButtonsWithAnimation() {
+    val anim = AnimationUtils
+        .loadAnimation(this, R.anim.fadout)
+    google.startAnimation(anim)
+    twitter.startAnimation(anim)
+    anim.setAnimationListener(object : Animation.AnimationListener {
+      override fun onAnimationEnd(animation: Animation?) {
+        google.hide()
+        twitter.hide()
+      }
+    
+      override fun onAnimationRepeat(animation: Animation?) {
+        //no-op
+      }
+    
+      override fun onAnimationStart(animation: Animation?) {
+        //no-op
+      }
+    })
+  }
+  
   private fun initGoogleLogin() {
     google.clicks()
         .doOnNext {
           spin_kit.show()
-          val anim = AnimationUtils
-              .loadAnimation(this, R.anim.fadout)
-          google.startAnimation(anim)
-          anim.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationEnd(animation: Animation?) {
-              google.hide()
-            }
-    
-            override fun onAnimationRepeat(animation: Animation?) {
-              //no-op
-            }
-    
-            override fun onAnimationStart(animation: Animation?) {
-              //no-op
-            }
-          })
+          hideButtonsWithAnimation()
         }
         .subscribe {
           signInWithGoogle()
@@ -83,7 +89,10 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   
   private fun initTwitterLogin() {
     twitter.clicks()
-        .doOnNext { spin_kit.show() }
+        .doOnNext {
+          spin_kit.show()
+          hideButtonsWithAnimation()
+        }
         .subscribe {
           mTwitterAuthClient.authorize(this, object : Callback<TwitterSession>() {
             override fun success(result: Result<TwitterSession>?) {
