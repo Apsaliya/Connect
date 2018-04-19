@@ -103,6 +103,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                   .addOnCompleteListener(this@LoginActivity) { task ->
                     if (!task.isSuccessful) {
                       showSnackBar(getString(R.string.label_auth_failed))
+                      google.show()
+                      twitter.show()
                     } else {
                       onFirebaseAuthSuccess()
                     }
@@ -111,6 +113,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             
             override fun failure(exception: TwitterException?) {
               showSnackBar(getString(R.string.label_auth_failed))
+              google.show()
+              twitter.show()
             }
           })
         }
@@ -158,6 +162,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         firebaseAuthWithGoogle(account!!)
       } else {
         spin_kit.hide()
+        google.show()
+        twitter.show()
         showSnackBar(getString(R.string.label_auth_failed))
       }
     } else {
@@ -178,6 +184,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     auth?.signInWithCredential(credential)!!
         .addOnCompleteListener(this) { task ->
           if (!task.isSuccessful) {
+            google.show()
+            twitter.show()
             showSnackBar(getString(R.string.label_auth_failed))
           } else {
             onFirebaseAuthSuccess()
@@ -191,10 +199,14 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
       startActivityForResult(signInIntent, 101)
     } else {
       getString(R.string.no_internet)
+      google.show()
+      twitter.show()
     }
   }
   
   override fun onConnectionFailed(p0: ConnectionResult) {
     showSnackBar(getString(R.string.label_auth_failed))
+    google.show()
+    twitter.show()
   }
 }
