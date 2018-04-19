@@ -59,7 +59,7 @@ class FeedActivity : AppCompatActivity() {
         }
     
     spinKitFeed.show()
-    viewModel.getAllNotices()
+    viewModel.getAllPosts()
     
     viewModel.viewState.observe(this, Observer {
       if (it?.showError!!) {
@@ -67,7 +67,7 @@ class FeedActivity : AppCompatActivity() {
         if (it.errorMessage != null) {
           showSnackBar(it.errorMessage)
         } else {
-          showSnackBar(getString(R.string.unknown_error))
+          showSnackBar(getString(R.string.feed_load_error))
         }
       }
       
@@ -138,6 +138,7 @@ class FeedActivity : AppCompatActivity() {
         .subscribeOn(Schedulers.io())
         .subscribe({
           upLoader.hide()
+          viewModel.getAllPosts()
         }, {
           upLoader.hide()
           it.printStackTrace()

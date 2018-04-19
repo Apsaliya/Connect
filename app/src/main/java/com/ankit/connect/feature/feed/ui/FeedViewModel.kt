@@ -31,8 +31,8 @@ internal class FeedViewModel(val remoteDataSource: RemoteDataSource, val applica
       val single: Pair<Int, String>? = null
   )
   
-  fun getAllNotices() {
-    addDisposible(remoteDataSource.getAllNotices()
+  fun getAllPosts() {
+    addDisposible(remoteDataSource.getAllPosts()
         .map { t -> t.posts }
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
