@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppThemeConnect">
-        <activity android:name=".feature.feed.ui.FeedActivity"/>
+        <activity android:name=".feature.feed.ui.FeedActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".feature.comments.ui.CommentsActivity"
             android:windowSoftInputMode="adjustResize"/>

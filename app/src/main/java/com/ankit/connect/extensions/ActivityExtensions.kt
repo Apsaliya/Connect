@@ -5,7 +5,6 @@ package com.ankit.connect.extensions
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +16,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.View
+import com.ankit.connect.R
 
 /**
  * Created by ankit on 13/04/18.
@@ -49,7 +49,7 @@ inline fun Activity.checkStoragePermission(): Boolean {
           startActivity(myAppSettings)
         }
         
-        val builder = AlertDialog.Builder(this).setMessage("Permission required").setPositiveButton("OK", okListener)
+        val builder = AlertDialog.Builder(this).setMessage(getString(R.string.no_permission)).setPositiveButton(getString(R.string.label_ok), okListener)
         
         if (!TextUtils.isEmpty(title)) {
           builder.setTitle(title)
