@@ -27,7 +27,7 @@
             android:layout_height="60dp"
             android:background="@drawable/google_logo"
             android:layout_marginEnd="20dp"
-            android:text="Google" />
+            android:text="@string/label_google" />
 
         <ImageButton
             android:id="@+id/twitter"
@@ -35,7 +35,7 @@
             android:layout_height="60dp"
             android:layout_marginStart="20dp"
             android:background="@drawable/twitter"
-            android:text="Twitter" />
+            android:text="@string/label_twitter" />
     </LinearLayout>
 
 </RelativeLayout>

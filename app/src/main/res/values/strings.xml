@@ -5,6 +5,10 @@
     <string name="permission_deny_msg">Permission denied. Can not access gallery images.</string>
     <string name="label_all">All</string>
     <string name="label_ok">OK</string>
+    <string name="label_google">Google</string>
+    <string name="label_twitter">Twitter</string>
+    <string name="label_uploading">Uploading…</string>
+    <string name="label_add_comment">Add a comment…</string>
     <string name="no_permission">Please give storage permission to Connect on next screen. Connect requires it read images from your gallery.</string>
     <string name="unknown_error">Something went wrong. Please try again later.</string>
     <string name="no_internet">No internet available. Please connect to internet and try again.</string>
