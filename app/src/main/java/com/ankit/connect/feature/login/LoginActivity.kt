@@ -13,7 +13,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.login.*
 import androidx.core.content.edit
 import com.ankit.connect.extensions.*
 import com.ankit.connect.feature.feed.ui.FeedActivity
@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_login)
+    setContentView(R.layout.login)
     
     val preferences = getPreference()
     val authRequired = !preferences.getBoolean(LOGGED_IN, false)

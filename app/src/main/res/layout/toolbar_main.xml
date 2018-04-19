@@ -6,6 +6,7 @@
     app:contentInsetEnd="0dp"
     app:contentInsetLeft="0dp"
     app:contentInsetRight="0dp"
+    android:background="@color/white"
     app:contentInsetStart="0dp">
 
     <RelativeLayout
@@ -14,10 +15,10 @@
 
         <ImageView
             android:layout_width="100dp"
-            android:layout_height="44dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_marginStart="16dp"
-            android:src="@drawable/connect" />
+            android:src="@drawable/instagro" />
 
         <LinearLayout
             android:id="@+id/upLoader"
@@ -32,8 +33,8 @@
             <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/spin_kit"
                 style="@style/SpinKitView.Small.DoubleBounce"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/_50dp"
+                android:layout_height="@dimen/_50dp"
                 android:layout_gravity="center"
                 app:SpinKit_Color="@color/colorAccent" />
 
@@ -41,8 +42,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="@dimen/_16dp"
+                android:layout_marginStart="@dimen/_8dp"
                 android:text="@string/label_uploading"
                 android:textColor="@color/colorPrimary"
                 android:textStyle="italic" />

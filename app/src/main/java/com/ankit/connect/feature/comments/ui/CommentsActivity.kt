@@ -5,16 +5,16 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.text.TextUtils
 import com.ankit.connect.App
 import com.ankit.connect.R
+import com.ankit.connect.extensions.*
 import com.ankit.connect.feature.feed.models.Post
-import com.ankit.connect.extensions.hide
-import com.ankit.connect.extensions.show
-import com.ankit.connect.extensions.showSnackBar
 import com.ankit.connect.feature.comments.CommentsViewModelFactory
 import com.ankit.connect.feature.comments.data.RemoteDataSource
 import com.ankit.connect.util.Cache
-import kotlinx.android.synthetic.main.activity_detail.*
+import com.jakewharton.rxbinding2.view.clicks
+import kotlinx.android.synthetic.main.comments.*
 
 /**
  * Created by ankit on 15/04/18.
@@ -29,7 +29,7 @@ class CommentsActivity : AppCompatActivity() {
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_detail)
+    setContentView(R.layout.comments)
     post = Cache.get(KEY_DATA) as Post
     viewModel = ViewModelProviders.of(this, CommentsViewModelFactory(RemoteDataSource(), application as App)).get(CommentsViewModel::class.java)
   
@@ -51,7 +51,6 @@ class CommentsActivity : AppCompatActivity() {
       
       if (it?.reset != null && it.reset) {
         addComment.text = null
-        addComment.clearFocus()
       }
       
       if (it?.showError!!) {
@@ -63,12 +62,21 @@ class CommentsActivity : AppCompatActivity() {
       }
     })
     
-    sendComment.setOnClickListener {
-      val commentText = addComment.text.toString()
-      
-      if (commentText.isNotEmpty()) {
-        viewModel.sendComment(commentText, post.id!!)
+    addComment.onTextChanged {
+      if (TextUtils.isEmpty(it)) {
+        sendComment.disable()
+      } else {
+        sendComment.enable()
       }
     }
+    
+    sendComment.clicks()
+        .subscribe {
+          val commentText = addComment.text.toString()
+  
+          if (commentText.isNotEmpty()) {
+            viewModel.sendComment(commentText, post.id!!)
+          }
+        }
   }
 }

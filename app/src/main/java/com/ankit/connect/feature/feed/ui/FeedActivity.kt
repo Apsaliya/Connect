@@ -8,7 +8,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.PersistableBundle
 import com.ankit.connect.util.Cache
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -27,11 +26,10 @@ import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import com.sangcomz.fishbun.define.Define
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.post.*
+import kotlinx.android.synthetic.main.feed.*
 import kotlinx.android.synthetic.main.toolbar_main.*
 import java.util.ArrayList
-import android.os.Parcelable
-
+import com.jakewharton.rxbinding2.view.clicks
 
 
 /**
@@ -39,28 +37,26 @@ import android.os.Parcelable
  */
 class FeedActivity : AppCompatActivity() {
   
-  private var uris = ArrayList<Uri>()
-  private lateinit var viewModel: FeedViewModel
+  internal var uris = ArrayList<Uri>()
+  internal lateinit var viewModel: FeedViewModel
   
-  companion object {
-    internal const val KEY_SCROLL_STATE = "key_scroll_state"
-  }
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.post)
+    setContentView(R.layout.feed)
     viewModel = ViewModelProviders.of(this, FeedViewModelFactory(RemoteDataSource(), application as App)).get(FeedViewModel::class.java)
   
     list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
     list.itemAnimator = ItemAnimator()
-    fab.setOnClickListener {
-      if (hasInternetConnection()) {
-        if (checkAndRequestStoragePermission()) {
-          showGallery()
+    fab.clicks()
+        .subscribe{
+          if (hasInternetConnection()) {
+            if (checkAndRequestStoragePermission()) {
+              showGallery()
+            }
+          } else {
+            showSnackBar(getString(R.string.no_internet))
+          }
         }
-      } else {
-        showSnackBar(getString(R.string.no_internet))
-      }
-    }
     
     spinKitFeed.show()
     viewModel.getAllNotices()
@@ -110,17 +106,6 @@ class FeedActivity : AppCompatActivity() {
         }
       }
     }
-  }
-  
-  override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-    super.onSaveInstanceState(outState, outPersistentState)
-    outState?.putParcelable(KEY_SCROLL_STATE,  (list.layoutManager as LinearLayoutManager).onSaveInstanceState())
-  }
-  
-  override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-    super.onRestoreInstanceState(savedInstanceState)
-    val savedRecyclerLayoutState = savedInstanceState?.getParcelable<Parcelable>(KEY_SCROLL_STATE)
-    list.layoutManager.onRestoreInstanceState(savedRecyclerLayoutState)
   }
   
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

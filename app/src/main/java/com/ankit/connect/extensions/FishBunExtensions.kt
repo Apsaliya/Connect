@@ -12,7 +12,7 @@ import com.sangcomz.fishbun.FishBunCreator
 @Suppress("NOTHING_TO_INLINE")
 inline fun FishBunCreator.prepareActionBar(context: Context): FishBunCreator {
   return setActionBarColor(ContextCompat.getColor(context, R.color.colorPrimary), ContextCompat.getColor(context, R.color.colorPrimaryDark), false)
-      .setActionBarTitleColor(ContextCompat.getColor(context, R.color.colorAccent))
+      .setActionBarTitleColor(ContextCompat.getColor(context, android.R.color.white))
 }
 
 @Suppress("NOTHING_TO_INLINE")

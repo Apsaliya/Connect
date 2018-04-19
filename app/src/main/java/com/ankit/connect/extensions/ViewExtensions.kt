@@ -16,3 +16,11 @@ inline fun View.show() {
 inline fun View.hide() {
   visibility = GONE
 }
+
+inline fun View.enable() {
+  isEnabled = true
+}
+
+inline fun View.disable() {
+  isEnabled = false
+}
