@@ -42,7 +42,7 @@ internal class FeedViewModel(val remoteDataSource: RemoteDataSource, val applica
             totalPosts = it.size
           }
         }, {
-          it.printStackTrace()
+          viewState.value = ViewState(showError = true)
         }))
   }
   

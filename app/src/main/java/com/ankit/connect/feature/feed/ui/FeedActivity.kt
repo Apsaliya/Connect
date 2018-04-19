@@ -63,6 +63,7 @@ class FeedActivity : AppCompatActivity() {
     
     viewModel.viewState.observe(this, Observer {
       if (it?.showError!!) {
+        spinKitFeed.hide()
         if (it.errorMessage != null) {
           showSnackBar(it.errorMessage)
         } else {

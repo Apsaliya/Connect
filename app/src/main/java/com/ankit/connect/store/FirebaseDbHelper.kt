@@ -259,9 +259,12 @@ class FirebaseDbHelper {
       postsQuery.addValueEventListener(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
           val objectMap = dataSnapshot.value as Map<String, Any>?
-          val result = dataSnapshot.toPostListResult(objectMap = objectMap!!)
-  
-          it.onNext(result)
+          if (objectMap != null) {
+            val result = dataSnapshot.toPostListResult(objectMap = objectMap)
+            it.onNext(result)
+          } else {
+            it.onError(IllegalStateException("Null SnapShot received"))
+          }
         }
         
         override fun onCancelled(databaseError: DatabaseError) {
